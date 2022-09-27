@@ -22,8 +22,7 @@ def que():
         # 回数上限チェック
         if limit-1 < count:
             print("gameover")
-            break
-        
+            break        
         # 問題生成
         origin = makelis()
         plis = [chr(x) for x in sorted(origin)] # 対象文字
@@ -32,7 +31,6 @@ def que():
             flis.append(chr(origin.pop()))
         flis.sort()
         qlis = [chr(x) for x in origin]         # 表示文字
-
         # 問題表示
         text_list = [["対象文字", plis], ["欠損文字", flis], ["表示文字", qlis]]
         text_index = [0, 2]         # 表示指定
@@ -40,7 +38,6 @@ def que():
         for i in text_index:
             print(f"{text_list[i][0]}\n" + " ".join(text_list[i][1]))
         check = kaito("\n欠損文字はいくつあるでしょうか?: ", [str(fn)]) 
-
         # 判定
         if not check:
             print(f"不正解です。\n"+"-"*10)
@@ -59,9 +56,7 @@ def que():
             else:
                 print("パーフェクト！")
                 break
-            continue
-
-            
+            continue            
 
 def kaito(text, ans):
     # 入力した文字がans内にあるならcheckに代入して返す
