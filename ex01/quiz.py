@@ -5,7 +5,7 @@ def syutudai():
     num = random.randint(0, 2)
     que = ["サザエの旦那の名前は?", "カツオの妹の名前は?", "タラオはカツオから見てどんな関係？"]
     ans = [["マスオ", "ますお"], ["ワカメ", "わかめ"], ["甥", "おい", "甥っ子", "おいっこ"]]
-    print(que[num])
+    print(f"問題: {que[num]}")
     kaito(ans[num])
 
 def kaito(ans):
