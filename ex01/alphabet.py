@@ -35,7 +35,7 @@ def que():
         # text_index = [0, 1, 2]    # デバック用
         for i in text_index:
             print(f"{text_list[i][0]}\n" + " ".join(text_list[i][1]))
-        check = kaito("欠損文字はいくつあるでしょうか?: ", [str(fn)])
+        check = kaito("\n欠損文字はいくつあるでしょうか?: ", [str(fn)])
 
         if not check:
             print(f"不正解です。\n"+"-"*10)
