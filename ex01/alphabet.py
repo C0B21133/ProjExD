@@ -25,14 +25,13 @@ def que():
             flis.append(chr(origin.pop()))
         flis.sort()
         qlis = [chr(x) for x in origin]         # 表示文字
-        
-        print("対象文字")
-        print(" ".join(plis))
-        print("欠損文字")
-        print(" ".join(flis))
-        print("表示文字")
-        print(" ".join(qlis))
+
+        text_list = [["対象文字", plis], ["欠損文字", flis], ["表示文字", qlis]]
+        text_index = [0, 1, 2]
+        for i in text_index:
+            print(f"{text_list[i][0]}\n" + " ".join(text_list[i][1]))
         check = kaito("欠損文字はいくつあるでしょうか?: ", [str(fn)])
+        
         if not check:
             print("不正解です。\n")
             count += 1
