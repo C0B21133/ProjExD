@@ -61,4 +61,8 @@ def kaito(text, ans):
         check = ip
     return check
 
-que()
+if __name__ == "__main__":
+    st = datetime.datetime.now()
+    que()
+    ed = datetime.datetime.now()
+    print(f"所要時間: {(ed-st).seconds}s")
