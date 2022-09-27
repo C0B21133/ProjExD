@@ -20,7 +20,7 @@ def que():
     global count
     while True:
         # 回数上限チェック
-        if limit < count:
+        if limit-1 < count:
             print("gameover")
             break
         
