@@ -41,6 +41,7 @@ def que():
             print(f"{text_list[i][0]}\n" + " ".join(text_list[i][1]))
         check = kaito("\n欠損文字はいくつあるでしょうか?: ", [str(fn)]) 
 
+        # 判定
         if not check:
             print(f"不正解です。\n"+"-"*10)
             count += 1
