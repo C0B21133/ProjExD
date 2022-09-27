@@ -19,9 +19,12 @@ def makelis():
 def que():
     global count
     while True:
+        # 回数上限チェック
         if limit < count:
             print("gameover")
             break
+        
+        # 問題生成
         origin = makelis()
         plis = [chr(x) for x in sorted(origin)] # 対象文字
         flis = []                               # 欠損文字
@@ -30,12 +33,13 @@ def que():
         flis.sort()
         qlis = [chr(x) for x in origin]         # 表示文字
 
+        # 問題表示
         text_list = [["対象文字", plis], ["欠損文字", flis], ["表示文字", qlis]]
         text_index = [0, 2]         # 表示指定
         # text_index = [0, 1, 2]    # デバック用
         for i in text_index:
             print(f"{text_list[i][0]}\n" + " ".join(text_list[i][1]))
-        check = kaito("\n欠損文字はいくつあるでしょうか?: ", [str(fn)])
+        check = kaito("\n欠損文字はいくつあるでしょうか?: ", [str(fn)]) 
 
         if not check:
             print(f"不正解です。\n"+"-"*10)
@@ -59,6 +63,8 @@ def que():
             
 
 def kaito(text, ans):
+    # 入力した文字がans内にあるならcheckに代入して返す
+    # なければNone
     check = None
     ip = input(text)
     if ip in ans:
