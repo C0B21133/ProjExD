@@ -14,7 +14,13 @@ def makelis():
         num = random.randint(65, 90)
         if num not in lis:
             lis.append(num)
-    return lis
+    plis = [chr(x) for x in sorted(lis)]    # 対象文字
+    flis = []                               # 欠損文字
+    for _ in range(fn):
+        flis.append(chr(lis.pop()))
+    flis.sort()
+    qlis = [chr(x) for x in lis]            # 表示文字
+    return plis, flis, qlis
 
 def que():
     global count
@@ -24,17 +30,12 @@ def que():
             print("gameover")
             break        
         # 問題生成
-        origin = makelis()
-        plis = [chr(x) for x in sorted(origin)] # 対象文字
-        flis = []                               # 欠損文字
-        for _ in range(fn):
-            flis.append(chr(origin.pop()))
-        flis.sort()
-        qlis = [chr(x) for x in origin]         # 表示文字
+        plis, flis, qlis = makelis()
+
         # 問題表示
         text_list = [["対象文字", plis], ["欠損文字", flis], ["表示文字", qlis]]
-        text_index = [0, 2]         # 表示指定
-        # text_index = [0, 1, 2]    # デバック用
+        text_index = [0, 2]                 # 表示指定
+        # text_index = [0, 1, 2]            # デバック用
         for i in text_index:
             print(f"{text_list[i][0]}\n" + " ".join(text_list[i][1]))
         check = kaito("\n欠損文字はいくつあるでしょうか?: ", [str(fn)]) 
