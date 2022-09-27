@@ -20,7 +20,7 @@ def makelis():
         flis.append(chr(lis.pop()))
     flis.sort()
     qlis = [chr(x) for x in lis]            # 表示文字
-    return plis, flis, qlis
+    return [plis, flis, qlis]
 
 def que():
     global count
@@ -29,15 +29,13 @@ def que():
         if limit-1 < count:
             print("gameover")
             break        
-        # 問題生成
-        plis, flis, qlis = makelis()
-
-        # 問題表示
-        text_list = [["対象文字", plis], ["欠損文字", flis], ["表示文字", qlis]]
+         # 問題表示
+        question_list = makelis()
+        text_list = ["対象文字", "欠損文字", "表示文字"]
         text_index = [0, 2]                 # 表示指定
         # text_index = [0, 1, 2]            # デバック用
         for i in text_index:
-            print(f"{text_list[i][0]}\n" + " ".join(text_list[i][1]))
+            print(f"{text_list[i]}\n" + " ".join(question_list[i]))
         check = kaito("\n欠損文字はいくつあるでしょうか?: ", [str(fn)]) 
         # 判定
         if not check:
@@ -47,13 +45,13 @@ def que():
         else:
             print("正解です。それでは、具体的に欠損文字を1つずつ入力してください")
             for i in range(fn):
-                check = kaito(f"{i+1}つ目の文字を入力してください: ", flis)
+                check = kaito(f"{i+1}つ目の文字を入力してください: ", question_list[1])
                 if not check:
                     print(f"不正解です。\n"+"-"*10)
                     count += 1
                     break
                 else:
-                    flis.remove(check)
+                    question_list[1].remove(check)
             else:
                 print("パーフェクト！")
                 break
