@@ -29,7 +29,7 @@ def que():
         if limit-1 < count:
             print("gameover")
             break        
-         # 問題表示
+        # 問題表示
         question_list = makelis()
         text_list = ["対象文字", "欠損文字", "表示文字"]
         text_index = [0, 2]                 # 表示指定
