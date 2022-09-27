@@ -4,6 +4,7 @@ import random
 pn = 10     # 対象文字数
 fn = 2      # 欠損文字数
 count = 0   # 繰り返し回数
+limit = 3   # 上限
 
 def makelis():
     lis = []
@@ -18,6 +19,9 @@ def makelis():
 def que():
     global count
     while True:
+        if limit < count:
+            print("gameover")
+            break
         origin = makelis()
         plis = [chr(x) for x in sorted(origin)] # 対象文字
         flis = []                               # 欠損文字
@@ -27,13 +31,14 @@ def que():
         qlis = [chr(x) for x in origin]         # 表示文字
 
         text_list = [["対象文字", plis], ["欠損文字", flis], ["表示文字", qlis]]
-        text_index = [0, 1, 2]
+        text_index = [0, 2]         # 表示指定
+        # text_index = [0, 1, 2]    # デバック用
         for i in text_index:
             print(f"{text_list[i][0]}\n" + " ".join(text_list[i][1]))
         check = kaito("欠損文字はいくつあるでしょうか?: ", [str(fn)])
-        
+
         if not check:
-            print("不正解です。\n")
+            print(f"不正解です。\n"+"-"*10)
             count += 1
             continue
         else:
@@ -47,7 +52,7 @@ def que():
                 else:
                     flis.remove(check)
             else:
-                print("正解です")
+                print("パーフェクト！")
                 break
             continue
 
