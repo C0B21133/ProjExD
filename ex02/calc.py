@@ -26,29 +26,49 @@ class sum_button(_button):
 
     @staticmethod
     def button_click(event):
+        # entryから取得
         data = entry.get()
-        data = data.split("+")
-        data = [int(i) for i in data]
-        ans = sum(data)
+        if data[-1] == "%":
+            try:
+                ans = int(data[:-1])/100
+            except:
+                ans = "error"
+        else:
+            ans = eval(data)
         entry.delete(0, tk.END)
         entry.insert(tk.END, ans)
 
+class del_button(_button):
+    def __init__(self, num, index):
+        super().__init__(num, index)
+        self.button.bind("<1>", del_button.button_click)
 
-# 初期化
-root = tk.Tk()
-root.title("calc")
-root.geometry("293x573")
+    @staticmethod
+    def button_click(event):
+        entry.delete(0, tk.END)
 
-entry = tk.Entry(justify="right", width=10, font=("Times New Roman", 40))
-entry.grid(row=0, column=0,  columnspan=3)
-
-# ボタン作成
-index = [[j, k] for j in range(1, 5) for k in range(3)]
-index = index[:10]
-index.reverse()
-buttons = [_button(n, index[n]) for n in range(10)]
-plusbutton = _button("+", [4, 1])
-sumbutton = sum_button("=", [4, 2])
-
-root.mainloop()
+if __name__ == "__main__":
+    # 初期化 "293x573"
+    root = tk.Tk()
+    root.title("calc")
+    root.geometry("400x703")
+    # 入力欄作成
+    entry = tk.Entry(justify="right", width=13, font=("Times New Roman", 40))
+    entry.grid(row=0, column=0,  columnspan=4)
+    # ボタン作成
+    index = [[j, k] for j in range(1, 5) for k in range(3)]
+    index = index[:10]
+    index.reverse()
+    for n in range(10):
+        _button(n, index[n])
+    # 演算ボタン作成
+    sign1 = ["+", "-", "*", "/"]
+    sign2 = [".", "%"]
+    for i, n in enumerate(sign1, 2):
+        _button(n, [i, 3])
+    for i, n in enumerate(sign2, 4):
+        _button(n, [i, 2])        
+    sum_button("=", [4, 1])
+    del_button("del", [1, 3])
+    root.mainloop()
 
