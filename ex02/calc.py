@@ -12,16 +12,19 @@ class _button():
 
 def button_click(event):
     btn = event.widget
-    txt = btn["text"]
-    tkm.showinfo(txt, f"{txt}のボタンが押されました")
+    num = btn["text"]
+    tkm.showinfo(num, f"{num}のボタンが押されました")
 
 # 初期化
 root = tk.Tk()
 root.title("calc")
-root.geometry("300x500")
+root.geometry("293x573")
+
+entry = tk.Entry(justify="right", width=10, font=("Times New Roman", 40))
+entry.grid(row=0, column=0,  columnspan=3)
 
 # ボタン作成
-index = [[j, k] for j in range(4) for k in range(3)]
+index = [[j, k] for j in range(1, 5) for k in range(3)]
 index = index[:10]
 index.reverse()
 buttons = [_button(n) for n in range(10)]
