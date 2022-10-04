@@ -18,6 +18,22 @@ class _button():
         # tkm.showinfo(num, f"{num}のボタンが押されました")
         entry.insert(tk.END, num)
 
+
+class sum_button(_button):
+    def __init__(self, num, index):
+        super().__init__(num, index)
+        self.button.bind("<1>", sum_button.button_click)
+
+    @staticmethod
+    def button_click(event):
+        data = entry.get()
+        data = data.split("+")
+        data = [int(i) for i in data]
+        ans = sum(data)
+        entry.delete(0, tk.END)
+        entry.insert(tk.END, ans)
+
+
 # 初期化
 root = tk.Tk()
 root.title("calc")
@@ -31,7 +47,8 @@ index = [[j, k] for j in range(1, 5) for k in range(3)]
 index = index[:10]
 index.reverse()
 buttons = [_button(n, index[n]) for n in range(10)]
-pb = _button("+", [4, 1])
+plusbutton = _button("+", [4, 1])
+sumbutton = sum_button("=", [4, 2])
 
 root.mainloop()
 
