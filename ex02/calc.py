@@ -2,6 +2,7 @@ import tkinter as tk
 import tkinter.messagebox as tkm
 
 class _button():
+    # ボタンの基本設定
     def __init__(self, num, index):
         self.button = tk.Button(root, 
                                 text=num, 
@@ -11,6 +12,7 @@ class _button():
         self.button.grid(row=index[0], column=index[1])
         self.button.bind("<1>", _button.button_click)
 
+    # ボタンが押されたときの処理
     @staticmethod
     def button_click(event):
         btn = event.widget
@@ -20,10 +22,12 @@ class _button():
 
 
 class sum_button(_button):
+    # "="ボタンの基本設定
     def __init__(self, num, index):
         super().__init__(num, index)
         self.button.bind("<1>", sum_button.button_click)
 
+    # 演算処理
     @staticmethod
     def button_click(event):
         # entryから取得
@@ -39,19 +43,21 @@ class sum_button(_button):
         entry.insert(tk.END, ans)
 
 class del_button(_button):
+    # "del"ボタンの基本処理
     def __init__(self, num, index):
         super().__init__(num, index)
         self.button.bind("<1>", del_button.button_click)
 
+    # 入力欄の全消し処理
     @staticmethod
     def button_click(event):
         entry.delete(0, tk.END)
 
 if __name__ == "__main__":
-    # 初期化 "293x573"
+    # 初期化
     root = tk.Tk()
     root.title("calc")
-    root.geometry("400x703")
+    root.geometry("400x700")
     # 入力欄作成
     entry = tk.Entry(justify="right", width=13, font=("Times New Roman", 40))
     entry.grid(row=0, column=0,  columnspan=4)
