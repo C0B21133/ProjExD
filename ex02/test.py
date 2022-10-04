@@ -20,7 +20,7 @@ label = tk.Label(root,
 label.pack()
 
 # button = tk.Button(root, text="押すな", command=button_click)
-button = tk.Button(root, text="押すな")
+button = tk.Button(root, text="押すな", font=("", 30), bg="black", fg="white")
 button.bind("<1>", button_click)
 button.pack()
 
