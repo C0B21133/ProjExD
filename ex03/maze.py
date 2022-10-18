@@ -3,7 +3,12 @@ import tkinter as tk
 def key_down(event):
     global key
     key = event.keysym
+    # print(key)
 
+def key_up(event):
+    global key
+    key = ""
+    # print(key, "aaa")
 
 if __name__ == "__main__":
     # 初期化
@@ -11,6 +16,7 @@ if __name__ == "__main__":
     root.title("maze")
     key = ""
     root.bind("<KeyPress>", key_down)
+    root.bind("<KeyRelease>", key_up)
 
     canvas = tk.Canvas(root, width=1500, height=900, bg='black')
     canvas.pack()
