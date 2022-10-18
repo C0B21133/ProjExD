@@ -6,11 +6,13 @@ import time
 import threading
 
 def key_down(event):
+    # キーを取得
     global key
     key = event.keysym
     main_proc()
 
 def key_up(event):
+    # キーをリセット
     global key
     key = ""
     main_proc()
