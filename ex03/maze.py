@@ -17,10 +17,12 @@ def main_proc():
     global cx, cy, mx, my, key
     xd = {"Left":-1, "Right":1}
     yd = {"Up":-1, "Down":1}
-    if key in xd:
+    # x方向の処理かつ移動先が壁でない
+    if (key in xd) and not (mazelist[my][mx+xd[key]]):
         mx += xd[key]
         cx = 50 + mx * 100
-    elif key in yd:
+    # y方向の処理かつ移動先が壁でない
+    elif key in yd and not (mazelist[my+yd[key]][mx]):
         my += yd[key]
         cy = 50 + my * 100
     canvas.coords("tori", cx, cy)
