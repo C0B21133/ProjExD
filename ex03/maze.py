@@ -14,15 +14,16 @@ def key_up(event):
     # print(key, "aaa")
 
 def main_proc():
-    global cx, cy, key
-    xd = {"Left":-20, "Right":20}
-    yd = {"Up":-20, "Down":20}
+    global cx, cy, mx, my, key
+    xd = {"Left":-1, "Right":1}
+    yd = {"Up":-1, "Down":1}
     if key in xd:
-        cx += xd[key]
+        mx += xd[key]
+        cx = 50 + mx * 100
     elif key in yd:
-        cy += yd[key]
+        my += yd[key]
+        cy = 50 + my * 100
     canvas.coords("tori", cx, cy)
-    print(key, key in xd, key in yd)
 
 
 if __name__ == "__main__":
@@ -40,6 +41,7 @@ if __name__ == "__main__":
     mm.show_maze(canvas, mazelist)
 
     tori = tk.PhotoImage(file = "./ex03/fig/0.png")
-    cx, cy = 300, 400
+    cx, cy = 150, 150
+    mx, my = 1, 1
     canvas.create_image(cx, cy, image=tori, tag="tori")
     root.mainloop()
