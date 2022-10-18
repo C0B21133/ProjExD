@@ -11,4 +11,7 @@ if __name__ == "__main__":
     tori = tk.PhotoImage(file = "./ex03/fig/0.png")
     cx, cy = 300, 400
     canvas.create_image(cx, cy, image=tori, tag="tori")
+    
+    key = ""
+    
     root.mainloop()
