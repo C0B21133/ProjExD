@@ -3,12 +3,26 @@ import tkinter as tk
 def key_down(event):
     global key
     key = event.keysym
+    main_proc()
     # print(key)
 
 def key_up(event):
     global key
     key = ""
+    main_proc()
     # print(key, "aaa")
+
+def main_proc():
+    global cx, cy, key
+    xd = {"Left":-20, "Right":20}
+    yd = {"Up":-20, "Down":20}
+    if key in xd:
+        cx += xd[key]
+    elif key in yd:
+        cy += yd[key]
+    canvas.coords("tori", cx, cy)
+    print(key, key in xd, key in yd)
+
 
 if __name__ == "__main__":
     # 初期化
@@ -24,5 +38,4 @@ if __name__ == "__main__":
     tori = tk.PhotoImage(file = "./ex03/fig/0.png")
     cx, cy = 300, 400
     canvas.create_image(cx, cy, image=tori, tag="tori")
-
     root.mainloop()
