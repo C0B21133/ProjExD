@@ -55,10 +55,9 @@ def show_maze2(canvas, maze_lst):
                                     fill=color[maze_lst[y][x]])
 
 def dialog():
-    x  = tkm.showinfo("", "Are you ready?")
-    print(type(x))
-    if x == "ok":
-        start_time = time.perf_counter()
+    global start_time
+    tkm.showinfo("", "Are you ready?")
+    start_time = time.perf_counter()
 
 
 if __name__ == "__main__":
@@ -89,12 +88,13 @@ if __name__ == "__main__":
     # 初期位置周囲3*3の範囲の迷路を生成
     show_maze2(canvas, mazelist)
     # mm.show_maze(canvas, mazelist)
-    
+
     # こうかとん作成
     tori = tk.PhotoImage(file = "./ex03/fig/0.png")
     canvas.create_image(cx, cy, image=tori, tag="tori")
+    # タイマー初期化
+    start_time=0
     # ダイアログ表示(threadingじゃないとうまくいかなかった)
     thread = threading.Thread(target=dialog)
     thread.start()
-    # タイマー開始
     root.mainloop()
