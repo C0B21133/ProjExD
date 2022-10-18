@@ -37,6 +37,7 @@ if __name__ == "__main__":
     canvas.pack()
 
     mazelist = mm.make_maze(15, 9)
+    mm.show_maze(canvas, mazelist)
 
     tori = tk.PhotoImage(file = "./ex03/fig/0.png")
     cx, cy = 300, 400
