@@ -48,6 +48,7 @@ def gameover(scrn_sfc):
     fonts = pg.font.Font(None, 80)
     txt = fonts.render(str("GAMEOVER"), True, (255, 0, 0))
     scrn_sfc.blit(txt, (620, 350))
+    # こうかとんの画像変えたかった
     # tori_sfc = pg.image.load("fig/8.png")
     # scrn_sfc.blit(tori_sfc, tori_rct)
     pg.display.update()
@@ -74,18 +75,20 @@ def main():
     bombs.append(bomb(scrn_rct))
     clock = pg.time.Clock()
     while True:
+        # 背景作成
         scrn_sfc.blit(back_sfc, back_rct)
+        # ×で終了
         for event in pg.event.get():
             if event.type == pg.QUIT: return
+        # 爆弾追加処理
         bomb.count -= 1
         if not bomb.count:
             bombs.append(bomb(scrn_rct))
-
+        # 左上のパラメータ
         fonts = pg.font.Font(None, 30)
         txt = f"bombs:{bomb.bomb_num}  next:{bomb.count//100}"
         txt = fonts.render(str(txt), True, (0, 0, 0))
         scrn_sfc.blit(txt, (10, 10))
-
         # こうかとんキー処理
         key_lst = pg.key.get_pressed()
         if key_lst[pg.K_UP] or key_lst[pg.K_w]: 
@@ -96,19 +99,20 @@ def main():
             tori_rct.move_ip(1, 0)
         elif key_lst[pg.K_LEFT] or key_lst[pg.K_a]: 
             tori_rct.move_ip(-1, 0)
+        # こうかとんの壁判定
         yoko, tate = check_bound(tori_rct, scrn_rct)
         if yoko == -1:
-            if key_lst[pg.K_LEFT]: 
+            if key_lst[pg.K_LEFT] or key_lst[pg.K_a]: 
                 tori_rct.centerx += 1
-            if key_lst[pg.K_RIGHT]:
+            if key_lst[pg.K_RIGHT] or key_lst[pg.K_d]:
                 tori_rct.centerx -= 1
         if tate == -1:
-            if key_lst[pg.K_UP]: 
+            if key_lst[pg.K_UP] or key_lst[pg.K_w]: 
                 tori_rct.centery += 1
-            if key_lst[pg.K_DOWN]:
+            if key_lst[pg.K_DOWN] or key_lst[pg.K_s]:
                 tori_rct.centery -= 1  
         scrn_sfc.blit(tori_sfc, tori_rct)
-
+        # 爆弾の移動、衝突時gameover
         for b in bombs:
             b.move(scrn_sfc, scrn_rct)
             if tori_rct.colliderect(b.bomb_rct): 
