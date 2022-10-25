@@ -23,13 +23,16 @@ def main():
     tori_rct = tori_sfc.get_rect()
     tori_rct.center = 900, 400
     # 爆弾
+    vx = 1; vy = 1
     bomb_sfc = pg.Surface((20, 20))
     pg.draw.circle(bomb_sfc, (255, 0, 0), (10, 10), 10)
     bomb_sfc.set_colorkey((0, 0, 0))
     bomb_rct = tori_sfc.get_rect()
     bomb_rct.centerx = randint(0, scrn_rct.width)
     bomb_rct.centery = randint(0, scrn_rct.height)
-
+    # クロック
+    clock = pg.time.Clock()
+    clock.tick(1000)    
 
     while True:
         for event in pg.event.get():
@@ -39,6 +42,7 @@ def main():
         scrn_sfc.blit(tori_sfc, tori_rct)
         scrn_sfc.blit(bomb_sfc, bomb_rct)
 
+        # こうかとんキー処理
         key_lst = pg.key.get_pressed()
         if key_lst[pg.K_UP]: 
             tori_rct.move_ip(0, -1)
@@ -48,9 +52,8 @@ def main():
             tori_rct.move_ip(1, 0)
         elif key_lst[pg.K_LEFT]: 
             tori_rct.move_ip(-1, 0)
-
-        clock = pg.time.Clock()
-        clock.tick(1000)
+        
+        bomb_rct.move_ip(vx, vy)
         pg.display.update()
 
 if __name__ == "__main__":
