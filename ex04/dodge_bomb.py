@@ -78,6 +78,8 @@ def main():
         vy *= tate        
         bomb_rct.move_ip(vx, vy)
 
+        if tori_rct.colliderect(bomb_rct): return
+        
         scrn_sfc.blit(back_sfc, back_rct)
         scrn_sfc.blit(tori_sfc, tori_rct)
         scrn_sfc.blit(bomb_sfc, bomb_rct)
