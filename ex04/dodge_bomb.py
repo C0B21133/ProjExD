@@ -2,18 +2,18 @@ import pygame as pg
 import sys
 from random import randint
 
-# def koukaton(x, y, sfc):
-#     tori_sfc = pg.image.load("fig/6.png")
-#     tori_sfc = pg.transform.rotozoom(tori_sfc, 0, 2.0)
-#     tori_rct = tori_sfc.get_rect()
-#     tori_rct.center = x, y
-#     sfc.blit(tori_sfc, tori_rct)
-
 class bomb():
+    """
+    基本的に爆弾処理をクラス化したもの
+    countは次の爆弾を生成するまでの時間を決めている
+    """
     count = 0
+    bomb_num = 0
     def __init__(self, scrn_rct):
-        # カウント初期化
-        bomb.count = 2300
+        # カウント初期化、更新
+        bomb.count = 2000
+        bomb.bomb_num +=1
+        # 爆弾生成
         self.vx = 1
         self.vy = 1
         self.bomb_sfc = pg.Surface((20, 20))
@@ -22,7 +22,8 @@ class bomb():
         self.bomb_rct = self.bomb_sfc.get_rect()
         self.bomb_rct.centerx = randint(0, scrn_rct.width)
         self.bomb_rct.centery = randint(0, scrn_rct.height) 
-    def move(self, scrn_sfc, scrn_rct):      
+    def move(self, scrn_sfc, scrn_rct): 
+        # 爆弾の移動処理     
         yoko, tate = check_bound(self.bomb_rct, scrn_rct)
         self.vx *= yoko
         self.vy *= tate        
@@ -43,9 +44,12 @@ def check_bound(obj_rct, scr_rct):
     return yoko, tate
 
 def gameover(scrn_sfc):
+    """gameover処理をしています"""
     fonts = pg.font.Font(None, 80)
     txt = fonts.render(str("GAMEOVER"), True, (255, 0, 0))
     scrn_sfc.blit(txt, (620, 350))
+    # tori_sfc = pg.image.load("fig/8.png")
+    # scrn_sfc.blit(tori_sfc, tori_rct)
     pg.display.update()
     while True:
         for event in pg.event.get():
@@ -66,33 +70,31 @@ def main():
     tori_rct = tori_sfc.get_rect()
     tori_rct.center = 900, 400
     # 爆弾
-    # vx = 1; vy = 1
-    # bomb_sfc = pg.Surface((20, 20))
-    # pg.draw.circle(bomb_sfc, (255, 0, 0), (10, 10), 10)
-    # bomb_sfc.set_colorkey((0, 0, 0))
-    # bomb_rct = bomb_sfc.get_rect()
-    # bomb_rct.centerx = randint(0, scrn_rct.width)
-    # bomb_rct.centery = randint(0, scrn_rct.height)
     bombs = []
     bombs.append(bomb(scrn_rct))
     clock = pg.time.Clock()
     while True:
+        scrn_sfc.blit(back_sfc, back_rct)
         for event in pg.event.get():
             if event.type == pg.QUIT: return
         bomb.count -= 1
         if not bomb.count:
             bombs.append(bomb(scrn_rct))
 
+        fonts = pg.font.Font(None, 30)
+        txt = f"bombs:{bomb.bomb_num}  next:{bomb.count//100}"
+        txt = fonts.render(str(txt), True, (0, 0, 0))
+        scrn_sfc.blit(txt, (10, 10))
 
         # こうかとんキー処理
         key_lst = pg.key.get_pressed()
-        if key_lst[pg.K_UP]: 
+        if key_lst[pg.K_UP] or key_lst[pg.K_w]: 
             tori_rct.move_ip(0, -1)
-        elif key_lst[pg.K_DOWN]: 
+        elif key_lst[pg.K_DOWN] or key_lst[pg.K_s]: 
             tori_rct.move_ip(0, 1)
-        elif key_lst[pg.K_RIGHT]: 
+        elif key_lst[pg.K_RIGHT] or key_lst[pg.K_d]: 
             tori_rct.move_ip(1, 0)
-        elif key_lst[pg.K_LEFT]: 
+        elif key_lst[pg.K_LEFT] or key_lst[pg.K_a]: 
             tori_rct.move_ip(-1, 0)
         yoko, tate = check_bound(tori_rct, scrn_rct)
         if yoko == -1:
@@ -105,15 +107,7 @@ def main():
                 tori_rct.centery += 1
             if key_lst[pg.K_DOWN]:
                 tori_rct.centery -= 1  
-
-        # yoko, tate = check_bound(bomb_rct, scrn_rct)
-        # vx *= yoko
-        # vy *= tate        
-        # bomb_rct.move_ip(vx, vy)
-
-        scrn_sfc.blit(back_sfc, back_rct)
         scrn_sfc.blit(tori_sfc, tori_rct)
-        # scrn_sfc.blit(bomb_sfc, bomb_rct)
 
         for b in bombs:
             b.move(scrn_sfc, scrn_rct)
