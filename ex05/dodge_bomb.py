@@ -24,6 +24,9 @@ class Screen:
         self.back_sfc = pg.image.load(img_path)
         self.back_rct = self.back_sfc.get_rect()
 
+    def blit(self):
+        self.sfc.blit(self.back_sfc, self.back_rct)
+
 
 class Bird:
     def __init__(self, img_path, zoom, xy):
@@ -37,23 +40,25 @@ class Bird:
     def blit(self, scr:Screen):
         scr.sfc.blit(self.sfc, self.rct)
 
-    def update(self):
+    def update(self, scr:Screen):
         # こうかとん位置更新
         key_lst = pg.key.get_pressed()
         for key, delta in key_delta.items():
             if key_lst[key]:
                 self.rct.centerx += delta[0]
                 self.rct.centery += delta[1]
-                if check_bound(self.rct, self.rct) != (+1, +1):
+                # こうかとんの壁判定
+                if check_bound(self.rct, scr.rct) != (1, 1):
                     self.rct.centerx -= delta[0]
                     self.rct.centery -= delta[1]
-
+        self.blit(scr)
 
 
 class Bomb:
     """
     基本的に爆弾処理をクラス化したもの
-    countは次の爆弾を生成するまでの時間を決めている
+    BOMB_NUMは、爆弾インスタンスの数
+    COUNTは、次の爆弾を生成するまでの時間を決めている
     """
     COUNT = 0
     BOMB_NUM = 0
@@ -65,20 +70,23 @@ class Bomb:
         # 爆弾生成
         self.vx = 1
         self.vy = 1
-        self.bomb_sfc = pg.Surface((20, 20))
-        pg.draw.circle(self.bomb_sfc, (255, 0, 0), (10, 10), 10)
-        self.bomb_sfc.set_colorkey((0, 0, 0))
-        self.bomb_rct = self.bomb_sfc.get_rect()
-        self.bomb_rct.centerx = randint(0, scrn_rct.width)
-        self.bomb_rct.centery = randint(0, scrn_rct.height)
+        self.sfc = pg.Surface((20, 20))
+        pg.draw.circle(self.sfc, (255, 0, 0), (10, 10), 10)
+        self.sfc.set_colorkey((0, 0, 0))
+        self.rct = self.sfc.get_rect()
+        self.rct.centerx = randint(0, scrn_rct.width)
+        self.rct.centery = randint(0, scrn_rct.height) 
 
-    def move(self, scrn_sfc, scrn_rct): 
+    def blit(self, scr:Screen):
+        scr.sfc.blit(self.sfc, self.rct)
+
+    def update(self, scr:Screen): 
         # 爆弾の移動処理     
-        yoko, tate = check_bound(self.bomb_rct, scrn_rct)
+        yoko, tate = check_bound(self.rct, scr.rct)
         self.vx *= yoko
         self.vy *= tate        
-        self.bomb_rct.move_ip(self.vx, self.vy)
-        scrn_sfc.blit(self.bomb_sfc, self.bomb_rct)
+        self.rct.move_ip(self.vx, self.vy)
+        self.blit(scr)
 
 def check_bound(obj_rct, scr_rct):
     """
@@ -93,21 +101,22 @@ def check_bound(obj_rct, scr_rct):
         tate = -1
     return yoko, tate
 
-def gameover(scrn_sfc):
+def gameover(scr:Screen):
     """gameover処理をしています"""
     fonts = pg.font.Font(None, 80)
     txt = fonts.render(str("GAMEOVER"), True, (255, 0, 0))
-    scrn_sfc.blit(txt, (620, 350))
+    scr.sfc.blit(txt, (620, 350))
     # こうかとんの画像変えたかった
     # tori_sfc = pg.image.load("fig/8.png")
     # scrn_sfc.blit(tori_sfc, tori_rct)
     pg.display.update()
     while True:
         for event in pg.event.get():
-            if event.type == pg.QUIT: 
-                return True
+            if event.type == pg.QUIT: return 
 
 def main():
+    # gameoverフラグ
+    FLAG = False
     # スクリーン
     scr = Screen("pygame", (1500, 800), "fig/pg_bg.jpg")
     # こうかとん
@@ -115,51 +124,41 @@ def main():
     # 爆弾
     bombs = []
     bombs.append(Bomb(scr.rct))
-    # タイマー
+    # クロック
     clock = pg.time.Clock()
     while True:
         # 背景作成
-        scr.sfc.blit(scr.back_sfc, scr.back_rct)
+        scr.blit()
+
         # ×で終了
         for event in pg.event.get():
             if event.type == pg.QUIT: return
-        # 爆弾追加処理
-        Bomb.COUNT -= 1
-        if not Bomb.COUNT:
-            bombs.append(Bomb(scr.rct))
+
         # 左上のパラメータ
         fonts = pg.font.Font(None, 30)
         txt = f"bombs:{Bomb.BOMB_NUM}  next:{Bomb.COUNT//100}"
         txt = fonts.render(str(txt), True, (0, 0, 0))
         scr.sfc.blit(txt, (10, 10))
+
         # こうかとんキー処理
-        bird.update()
-        key_lst = pg.key.get_pressed()
-        # for key, delta in key_delta.items():
-        #     if key_lst[key]:
-        #         bird.rct.centerx += delta[0]
-        #         bird.rct.centery += delta[1]
-        #         if check_bound(bird.rct, bird.rct) != (+1, +1):
-        #             bird.rct.centerx -= delta[0]
-        #             bird.rct.centery -= delta[1]
-        # こうかとんの壁判定
-        yoko, tate = check_bound(bird.rct, scr.rct)
-        if yoko == -1:
-            if key_lst[pg.K_LEFT] or key_lst[pg.K_a]: 
-                bird.rct.centerx += 1
-            if key_lst[pg.K_RIGHT] or key_lst[pg.K_d]:
-                bird.rct.centerx -= 1
-        if tate == -1:
-            if key_lst[pg.K_UP] or key_lst[pg.K_w]: 
-                bird.rct.centery += 1
-            if key_lst[pg.K_DOWN] or key_lst[pg.K_s]:
-                bird.rct.centery -= 1  
-        scr.sfc.blit(bird.sfc, bird.rct)
+        bird.update(scr)
+
+        # 爆弾追加処理
+        Bomb.COUNT -= 1
+        if not Bomb.COUNT:
+            bombs.append(Bomb(scr.rct))
         # 爆弾の移動、衝突時gameover
+        
         for b in bombs:
-            b.move(scr.sfc, scr.rct)
-            if bird.rct.colliderect(b.bomb_rct): 
-                if gameover(scr.sfc): return        
+            b.update(scr)
+            if bird.rct.colliderect(b.rct): 
+                FLAG = True
+        
+        # gameover処理
+        if FLAG:
+            gameover(scr)
+            return
+
         # クロック 
         clock.tick(1000)  
         pg.display.update()
