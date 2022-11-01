@@ -55,7 +55,7 @@ def gameover(scrn_sfc):
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
-                return True 
+                return True
 
 
 def main():
