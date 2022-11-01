@@ -1,3 +1,5 @@
+from pickle import TRUE
+from re import A
 import pygame as pg
 import sys
 from random import randint
@@ -52,6 +54,7 @@ class Bird:
                     self.rct.centerx -= delta[0]
                     self.rct.centery -= delta[1]
         self.blit(scr)
+    
 
 
 class Bomb:
@@ -63,10 +66,9 @@ class Bomb:
     COUNT = 0
     BOMB_NUM = 0
 
-    def __init__(self, scrn_rct):
-        # カウント初期化、更新
-        Bomb.COUNT = 2000
-        Bomb.BOMB_NUM +=1
+    def __init__(self, scr:Screen):
+        # カウント初期化
+        Bomb.COUNT = 500
         # 爆弾生成
         self.vx = 1
         self.vy = 1
@@ -74,8 +76,11 @@ class Bomb:
         pg.draw.circle(self.sfc, (255, 0, 0), (10, 10), 10)
         self.sfc.set_colorkey((0, 0, 0))
         self.rct = self.sfc.get_rect()
-        self.rct.centerx = randint(0, scrn_rct.width)
-        self.rct.centery = randint(0, scrn_rct.height) 
+        self.rct.centerx = randint(0, scr.rct.width)
+        self.rct.centery = randint(0, scr.rct.height) 
+
+    def __del__(self):
+        Bomb.BOMB_NUM +=1
 
     def blit(self, scr:Screen):
         scr.sfc.blit(self.sfc, self.rct)
@@ -87,6 +92,47 @@ class Bomb:
         self.vy *= tate        
         self.rct.move_ip(self.vx, self.vy)
         self.blit(scr)
+
+class Attack:
+    FLAG = False
+    ATTACK_TIME = 0
+    COOL_TIME = 0
+    R = 100
+    def __init__(self, scr:Screen, bird:Bird):
+        self.sfc = pg.Surface((self.R*2, self.R*2))
+        pg.draw.circle(self.sfc, (0, 0, 0), (self.R, self.R), self.R)
+        self.sfc.set_colorkey((0, 0, 0))
+        self.rct = self.sfc.get_rect()
+        self.update(scr, bird)
+
+    def blit(self, scr:Screen):
+        scr.sfc.blit(self.sfc, self.rct)
+
+    def update(self, scr:Screen, bird:Bird):
+        if Attack.COOL_TIME:
+            Attack.COOL_TIME -= 1
+        self.rct.center = bird.rct.center
+        self.blit(scr)
+
+    def flag_on(self, scr:Screen, bird:Bird):
+        Attack.FLAG = True
+        Attack.ATTACK_TIME = 1000
+        pg.draw.circle(self.sfc, (30, 144, 255), (self.R, self.R), self.R)
+        self.update(scr, bird)
+    
+    def flag_off(self, scr:Screen, bird:Bird):
+        Attack.FLAG = False
+        Attack.COOL_TIME = 1500
+        pg.draw.circle(self.sfc, (0, 0, 0), (self.R, self.R), self.R)
+        self.update(scr, bird)
+
+# class explosion:
+#     def __init__(self, img_path, zoom, xy, scr:Screen):
+#         sfc = pg.image.load(img_path)
+#         self.sfc = pg.transform.rotozoom(sfc, 0, zoom)
+#         self.rct = self.sfc.get_rect()
+#         self.rct.center = xy
+#         scr.sfc.blit(self.sfc, self.rct)
 
 def check_bound(obj_rct, scr_rct):
     """
@@ -106,9 +152,7 @@ def gameover(scr:Screen):
     fonts = pg.font.Font(None, 80)
     txt = fonts.render(str("GAMEOVER"), True, (255, 0, 0))
     scr.sfc.blit(txt, (620, 350))
-    # こうかとんの画像変えたかった
-    # tori_sfc = pg.image.load("fig/8.png")
-    # scrn_sfc.blit(tori_sfc, tori_rct)
+    
     pg.display.update()
     while True:
         for event in pg.event.get():
@@ -121,44 +165,59 @@ def main():
     scr = Screen("pygame", (1500, 800), "fig/pg_bg.jpg")
     # こうかとん
     bird = Bird("fig/6.png", 2.0, (900, 400))
+    attack = Attack(scr, bird)
     # 爆弾
     bombs = []
-    bombs.append(Bomb(scr.rct))
+    bombs.append(Bomb(scr))
     # クロック
     clock = pg.time.Clock()
     while True:
         # 背景作成
         scr.blit()
-
+        attack.blit(scr)
         # ×で終了
         for event in pg.event.get():
             if event.type == pg.QUIT: return
-
         # 左上のパラメータ
         fonts = pg.font.Font(None, 30)
-        txt = f"bombs:{Bomb.BOMB_NUM}  next:{Bomb.COUNT//100}"
+        txt = f"killed:{Bomb.BOMB_NUM}  "
+        if Attack.ATTACK_TIME:
+            txt += f"attack_time:{Attack.ATTACK_TIME//100}"
+        if Attack.COOL_TIME:
+            txt += f"cool_time:{Attack.COOL_TIME//100}"
         txt = fonts.render(str(txt), True, (0, 0, 0))
         scr.sfc.blit(txt, (10, 10))
 
+        #　こうかとん攻撃
+        key_lst = pg.key.get_pressed()
+        if Attack.FLAG:
+            Attack.ATTACK_TIME -= 1
+            if Attack.ATTACK_TIME == 0:
+                attack.flag_off(scr, bird)
+        elif key_lst[pg.K_SPACE] and (not Attack.COOL_TIME):
+            attack.flag_on(scr, bird)
+        attack.update(scr, bird)
+
         # こうかとんキー処理
         bird.update(scr)
-
         # 爆弾追加処理
         Bomb.COUNT -= 1
         if not Bomb.COUNT:
-            bombs.append(Bomb(scr.rct))
-        # 爆弾の移動、衝突時gameover
-        
-        for b in bombs:
+             bombs.append(Bomb(scr))
+        # 爆弾の移動
+        for i, b in enumerate(bombs):
             b.update(scr)
+            if attack.rct.colliderect(b.rct) and attack.FLAG:
+                # attackと接触
+                del_bomb = bombs.pop(i)
+                del del_bomb
             if bird.rct.colliderect(b.rct): 
-                FLAG = True
-        
+                # こうかとんと接触
+                FLAG = True        
         # gameover処理
         if FLAG:
             gameover(scr)
             return
-
         # クロック 
         clock.tick(1000)  
         pg.display.update()
