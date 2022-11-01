@@ -1,5 +1,3 @@
-from pickle import TRUE
-from re import A
 import pygame as pg
 import sys
 from random import randint
@@ -94,10 +92,14 @@ class Bomb:
         self.blit(scr)
 
 class Attack:
-    FLAG = False
-    ATTACK_TIME = 0
-    COOL_TIME = 0
-    R = 100
+    """
+    init, blit, updateは大体他のクラスと同じ処理をする
+    flag_on, flag_offは攻撃状態の制御を行う
+    """
+    FLAG = False    # 攻撃状態か否か
+    ATTACK_TIME = 0 # 攻撃時間
+    COOL_TIME = 0   # 攻撃クールタイム
+    R = 100         # 攻撃エリアの半径
     def __init__(self, scr:Screen, bird:Bird):
         self.sfc = pg.Surface((self.R*2, self.R*2))
         pg.draw.circle(self.sfc, (0, 0, 0), (self.R, self.R), self.R)
@@ -110,22 +112,23 @@ class Attack:
 
     def update(self, scr:Screen, bird:Bird):
         if Attack.COOL_TIME:
-            Attack.COOL_TIME -= 1
+            Attack.COOL_TIME -= 1   # クールタイムがある場合0になるまでCOOL_TIMEを減らす
         self.rct.center = bird.rct.center
         self.blit(scr)
 
     def flag_on(self, scr:Screen, bird:Bird):
-        Attack.FLAG = True
-        Attack.ATTACK_TIME = 1000
+        Attack.FLAG = True          # 攻撃状態に設定
+        Attack.ATTACK_TIME = 1000   # 攻撃時間の設定
         pg.draw.circle(self.sfc, (30, 144, 255), (self.R, self.R), self.R)
         self.update(scr, bird)
     
     def flag_off(self, scr:Screen, bird:Bird):
-        Attack.FLAG = False
-        Attack.COOL_TIME = 1500
+        Attack.FLAG = False         # 通常状態に設定
+        Attack.COOL_TIME = 1500     # 攻撃クールタイムを設定
         pg.draw.circle(self.sfc, (0, 0, 0), (self.R, self.R), self.R)
         self.update(scr, bird)
 
+# 爆発処理(時間なくてできませんでした)
 # class explosion:
 #     def __init__(self, img_path, zoom, xy, scr:Screen):
 #         sfc = pg.image.load(img_path)
@@ -190,11 +193,11 @@ def main():
 
         #　こうかとん攻撃
         key_lst = pg.key.get_pressed()
-        if Attack.FLAG:
-            Attack.ATTACK_TIME -= 1
-            if Attack.ATTACK_TIME == 0:
+        if Attack.FLAG:                     # 攻撃状態なら
+            Attack.ATTACK_TIME -= 1         # 攻撃時間を1減らす
+            if Attack.ATTACK_TIME == 0:     # 攻撃時間がなくなったら
                 attack.flag_off(scr, bird)
-        elif key_lst[pg.K_SPACE] and (not Attack.COOL_TIME):
+        elif key_lst[pg.K_SPACE] and (not Attack.COOL_TIME): # spaceキーが押され、かつクールタイムがない時
             attack.flag_on(scr, bird)
         attack.update(scr, bird)
 
