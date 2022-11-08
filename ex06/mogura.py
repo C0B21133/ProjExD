@@ -4,6 +4,8 @@ from random import randint
 import time
 from threading import Thread
 
+#a
+
 # タイマー時間を設定
 TIME = 60
 
