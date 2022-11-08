@@ -79,7 +79,6 @@ class Mogura:
                 Mogura.NUMS -= 1
                 self.cool_time()
         else:
-            print("上限")
             self.cool_time()
     
     def check(self, pos):
