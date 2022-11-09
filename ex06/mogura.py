@@ -4,8 +4,6 @@ from random import randint
 import time
 from threading import Thread
 
-#a
-
 # タイマー時間を設定
 TIME = 60
 
@@ -46,7 +44,7 @@ class Mogura:
     LIMIT = 5
     NUMS = 0
     KILLS = 0
-    def __init__(self, img_path, zoom, xy):
+    def __init__(self, img_path, zoom):
         # 変数初期化
         self.FLAG = False
         self.COOL_TIME = randint(100, 2500)
@@ -56,7 +54,6 @@ class Mogura:
         self.sfc = pg.transform.rotozoom(sfc, 0, zoom)
         self.sfc.set_colorkey((255, 255, 255))
         self.rct = self.sfc.get_rect()
-        self.rct.center = xy
 
     def cool_time(self):
         self.COOL_TIME = randint(800, 1000)
@@ -115,7 +112,7 @@ class Bird:
         # 端に衝突を検知したら, 1/2の確率で実行
         if x == -1 and randint(0, 1):
             n = randint(0, yn-1)
-            self.rct.centery = basey + n*height 
+            self.rct.centery = basey + n*height - 10
         self.blit(scr)
 
     def check_bound(self, scr_rct):
@@ -158,11 +155,11 @@ def main():
     width = 200; height = 130   # x/y軸方向の幅
     xn = 4; yn = 5              # x/yのインスタンスの数
     holes = [[Hole(scr, (basex + x*width, basey + y*height)), 
-                Mogura("fig/mogura2.jpg", 0.13, (basex + x*width, basey + y*height))]
+                Mogura("fig/mogura2.jpg", 0.13)]
                 for x in range(xn) 
                 for y in range(yn)]
     # こうかとん
-    bird = Bird("fig/6.png", 1.8, (90, 140))
+    bird = Bird("fig/6.png", 1.8, (basex + 50, basey - 10))
     # クロック
     clock = pg.time.Clock()
     # タイマー
@@ -186,9 +183,8 @@ def main():
             if not hole[1].COOL_TIME:
                 hole[1].update(scr, hole[0])
                 for event in events:
-                    if event.type == pg.MOUSEBUTTONDOWN:
-                        if hole[1].check(event.pos):
-                            hole[1].click()
+                    if (event.type == pg.MOUSEBUTTONDOWN) and hole[1].check(event.pos):
+                        hole[1].click()
             else:
                 hole[1].COOL_TIME -= 1
         # bird(heightは、穴やモグラのy軸方向の幅)
