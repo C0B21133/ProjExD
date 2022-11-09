@@ -1,6 +1,7 @@
 import pygame as pg
 import sys
 from random import randint
+import numpy as np
 import time
 from threading import Thread
 
@@ -44,16 +45,18 @@ class Mogura:
     LIMIT = 5
     NUMS = 0
     KILLS = 0
-    def __init__(self, img_path, zoom):
+    def __init__(self):
         # 変数初期化
         self.FLAG = False
         self.COOL_TIME = randint(100, 2500)
         self.WAIT_TIME = 0
-        # 処理
-        sfc = pg.image.load(img_path)
-        self.sfc = pg.transform.rotozoom(sfc, 0, zoom)
-        self.sfc.set_colorkey((255, 255, 255))
+        
+    def set(self, setdata):    
+        # pictureを設定、setdata = [img_path, zoom, point]
+        sfc = pg.image.load(setdata[0])
+        self.sfc = pg.transform.rotozoom(sfc, 0, setdata[1])
         self.rct = self.sfc.get_rect()
+        self.point = setdata[2]
 
     def cool_time(self):
         self.COOL_TIME = randint(800, 1000)
@@ -61,9 +64,10 @@ class Mogura:
     def blit(self, scr:Screen):
         scr.sfc.blit(self.sfc, self.rct)
 
-    def update(self, scr:Screen, hole:Hole):
+    def update(self, scr:Screen, hole:Hole, setdata):
         if Mogura.NUMS < Mogura.LIMIT or self.FLAG:
             if not self.FLAG:
+                self.set(setdata)
                 self.FLAG = True
                 self.WAIT_TIME = randint(150, 500)
                 Mogura.NUMS += 1
@@ -86,7 +90,7 @@ class Mogura:
     def click(self):
         self.FLAG = False
         Mogura.NUMS -= 1
-        Mogura.KILLS += 1
+        Mogura.KILLS += self.point
         self.cool_time()
 
 
@@ -154,8 +158,7 @@ def main():
     basex = 40; basey = 150     # x/yの起点
     width = 200; height = 130   # x/y軸方向の幅
     xn = 4; yn = 5              # x/yのインスタンスの数
-    holes = [[Hole(scr, (basex + x*width, basey + y*height)), 
-                Mogura("fig/mogura2.jpg", 0.13)]
+    holes = [[Hole(scr, (basex + x*width, basey + y*height)), Mogura()]
                 for x in range(xn) 
                 for y in range(yn)]
     # こうかとん
@@ -168,6 +171,7 @@ def main():
     while True:
         # 背景作成
         scr.blit()
+        # イベント取得
         events = pg.event.get()
         # ×で終了
         for event in events:            
@@ -181,7 +185,11 @@ def main():
         for hole in holes:
             hole[0].blit(scr)
             if not hole[1].COOL_TIME:
-                hole[1].update(scr, hole[0])
+                # set_data = [img_path, zoom, point]
+                set_data = [["fig/mogura1.jpg", 0.13, 1], ["fig/mogura2.jpg", 0.13, 3], ["fig/mogura3.jpg", 0.11, 10], 
+                            ["fig/can.jpg", 0.25, -1], ["fig/chinsan.jpg", 0.035, -3]]
+                idx = np.random.choice(len(set_data), p=[0.65, 0.1, 0.01, 0.18, 0.06])
+                hole[1].update(scr, hole[0], set_data[idx])
                 for event in events:
                     if (event.type == pg.MOUSEBUTTONDOWN) and hole[1].check(event.pos):
                         hole[1].click()
