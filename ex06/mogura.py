@@ -185,9 +185,9 @@ def main():
         for hole in holes:
             hole[0].blit(scr)
             if not hole[1].COOL_TIME:
-                # set_data = [img_path, zoom, point]
+                # set_data = [img_path, zoom, point] 
                 set_data = [["fig/mogura1.jpg", 0.13, 1], ["fig/mogura2.jpg", 0.13, 3], ["fig/mogura3.jpg", 0.11, 10], 
-                            ["fig/can.jpg", 0.25, -1], ["fig/chinsan.jpg", 0.035, -3]]
+                            ["fig/can.jpg", 0.25, -1], ["fig/chinsan.jpg", 0.035, randint(-1, 1)*5]]
                 idx = np.random.choice(len(set_data), p=[0.65, 0.1, 0.01, 0.18, 0.06])
                 hole[1].update(scr, hole[0], set_data[idx])
                 for event in events:
