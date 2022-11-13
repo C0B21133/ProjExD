@@ -3,7 +3,7 @@ import sys
 from random import randint
 import time
 from threading import Thread
-
+from pygame.locals import *
 #a
 
 # タイマー時間を設定
@@ -161,6 +161,20 @@ def main():
                 Mogura("fig/mogura2.jpg", 0.13, (basex + x*width, basey + y*height))]
                 for x in range(xn) 
                 for y in range(yn)]
+    
+    
+    img1 = pg.image.load("fig/mogura2.jpg")
+    rect_img1 = img1.get_rect() 
+    #押されたときに+1と表示するためのフレーム数
+    display = 0
+    n_frames = 0
+    
+    
+    font2 = pg.font.SysFont(None, 45)
+    text2 = font2.render("+1", True, (0, 0, 0)) #スコアしたときに表示するテキスト
+    
+    
+
     # こうかとん
     bird = Bird("fig/6.png", 1.8, (90, 140))
     # クロック
@@ -172,13 +186,41 @@ def main():
         # 背景作成
         scr.blit()
         events = pg.event.get()
+        
+       
+        for x in range(4):
+            for y in range(5):
+                #四角形のオブジェクトを生成
+                #当たったかどうかの判定に用いる
+
+                pg.Rect((basex + x*width, basey + y*height), rect_img1.size)
+                for event in events:
+                    if (n_frames < 1000 * TIME) and (event.type == MOUSEBUTTONDOWN) and (event.button == 1):
+                        print("左クリックされた\n")
+                        #押されたところの点座標が画像の描写範囲内にあったら
+                        if pg.Rect((basex + x*width, basey + y*height), rect_img1.size).collidepoint(event.pos):
+                            print("pushed\n")
+                            #押されたら9フレーム表示する
+                            display = 50
+        
         # ×で終了
         for event in events:            
             if event.type == pg.QUIT: return
+            
+        if n_frames < 1000 * TIME:
+            n_frames += 1
+                    
+        if display > 0:
+            #マウスカーソルの位置情報を取得する
+            pos = pg.mouse.get_pos()
+            #マウスカーソルの位置に表示
+            scr.sfc.blit(text2, pos)
+            display -= 1
         # 左上のパラメータ
         fonts = pg.font.Font(None, 40)
         txt = f"score:{Mogura.KILLS}  time:{TIME}"
         txt = fonts.render(str(txt), True, (0, 0, 0))
+
         scr.sfc.blit(txt, (10, 20))
         # hole処理
         for hole in holes:
@@ -197,6 +239,15 @@ def main():
         if not TIME:
             timeup(scr)
             return
+        
+        
+        if display > 0:
+            #マウスカーソルの位置情報を取得する
+            pos = pg.mouse.get_pos()
+            #マウスカーソルの位置に表示
+            scr.sfc.blit(text2, pos)
+            display -= 1
+            
         # クロック 
         clock.tick(1000)  
         pg.display.update()
