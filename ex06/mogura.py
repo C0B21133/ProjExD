@@ -12,7 +12,7 @@ TIME = 60
 class Screen:
     """スクリーンに関する処理"""
     def __init__(self, title, wh, img_path):
-        # titlt: "pygame", wh: (1500, 800), img_path: "fig/sougenn.jpg"
+        # titlt: "pygame", wh: (800, 800), img_path: "fig/sougenn.jpg"
         # ウィンドウ
         pg.display.set_caption(title)
         self.sfc = pg.display.set_mode(wh)
@@ -105,20 +105,20 @@ class Mogura:
     def update(self, hole:Hole, setdata):
         self.hole = hole                            # Holeインタンスを保持
         if Mogura.NUMS < Mogura.LIMIT or self.FLAG: # 出現上限以下 又は 表示中の時
-            if not self.FLAG:                       # 新規表示なら
-                self.set(setdata)                       # set呼び出し (画像、ポイントの設定)
-                self.FLAG = True                        # 表示状態にする
-                self.WAIT_TIME = randint(150, 500)      # モグラを表示するカウント(updateメソッドが150~500回呼び出されるまで表示)
-                Mogura.NUMS += 1                        # 表示中のモグラの数 +1 
-            else:                                   # 既に表示済みなら
-                self.WAIT_TIME -= 1                     # モグラを表示するカウント -1
+            if not self.FLAG:                           # 新規表示なら
+                self.set(setdata)                           # set呼び出し (画像、ポイントの設定)
+                self.FLAG = True                            # 表示状態にする
+                self.WAIT_TIME = randint(150, 500)          # モグラを表示するカウント設定(updateメソッドが150~500回呼び出されるまで表示)
+                Mogura.NUMS += 1                            # 表示中のモグラの数 +1 
+            else:                                       # 既に表示済みなら
+                self.WAIT_TIME -= 1                         # モグラを表示するカウント -1
             self.rct.centerx = hole.rct.centerx + 60
             self.rct.centery = hole.rct.centery - 5
             self.blit()
-            if not self.WAIT_TIME:                  # モグラを表示するカウントがなくなった時
-                self.FLAG = False                       # 非表示にする
-                Mogura.NUMS -= 1                        # 表示中のモグラの数 -1 
-                self.cool_time()
+            if not self.WAIT_TIME:                      # モグラを表示するカウントがなくなった時
+                self.FLAG = False                           # 非表示にする
+                Mogura.NUMS -= 1                            # 表示中のモグラの数 -1 
+                self.cool_time()                            # cool_timeメソッド呼び出し(処理待機カウント設定)
         else:                                       # 出現上限以下 又は 表示中の時 以外の時
             self.cool_time()                            # cool_timeメソッド呼び出し(処理待機カウント設定)、ネットワークの衝突回避のイメージ
     
