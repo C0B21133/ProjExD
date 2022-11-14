@@ -29,6 +29,8 @@ class Screen:
 class Hole:
     """穴を生成"""
     R = 120
+    COUNT = 80      # 追記　スコア表示時間参照元
+
     def __init__(self, scr:Screen, xy):
         self.sfc = pg.Surface((self.R*2, self.R*2))
         pg.draw.ellipse(self.sfc, (157, 135, 67), (self.R, self.R, self.R, self.R/3)) # (0, 0, 0)だと背景と同化して消えちゃうので注意
@@ -36,8 +38,40 @@ class Hole:
         self.rct = self.sfc.get_rect()
         self.rct.center = xy
 
+        self.pos = 0                    # 追記 スコア表示位置
+        self.count = 0                  # 追記 スコア表示時間
+        self.mogurapoint = 0 #クリックされた対象のスコア
+
     def blit(self, scr:Screen):
         scr.sfc.blit(self.sfc, self.rct)
+
+        if self.count:                  # 追記 self.countが0出ない時(スコア表示時間が設定されている時)
+            self.count -= 1 # 表示時間を減らす
+            self.p1(scr)  # スコアを表示する関数を呼び出す
+
+    # Moguraクラスから呼び出される関数
+    # 引数1score：モグラの得点
+    def set(self, score):
+        self.pos = pg.mouse.get_pos()   # 追記 holeクラスにクリックされた位置を渡す
+        self.count = Hole.COUNT         # 追記 スコア表示時間を設定
+        self.mogurapoint = score # Holeクラスからpointを取得する
+        
+    # ここから変更
+    # モグラの得点に応じて画面にスコアを表示する関数
+    def p1(self, scr):
+        # モグラの得点が0点以下の処理
+        if(self.mogurapoint < 0):
+            font2 = pg.font.SysFont(None, 45)
+            txt = font2.render("{}".format(self.mogurapoint), True, (0, 0, 0))
+            scr.sfc.blit(txt, self.pos)
+        # モグラの得点が正の時の処理
+        else :
+            font2 = pg.font.SysFont(None, 45)
+            txt = font2.render("+{}".format(self.mogurapoint), True, (0, 0, 0))
+            scr.sfc.blit(txt, self.pos)
+            
+
+
 
 
 class Mogura:
@@ -56,7 +90,8 @@ class Mogura:
         sfc = pg.image.load(setdata[0])
         self.sfc = pg.transform.rotozoom(sfc, 0, setdata[1])
         self.rct = self.sfc.get_rect()
-        self.point = setdata[2]
+        self.point = setdata[2] #ポイントの設定
+        
 
     def cool_time(self):
         self.COOL_TIME = randint(800, 1000)
@@ -87,12 +122,15 @@ class Mogura:
     def check(self, pos):
         return self.rct.collidepoint(pos)
 
-    def click(self):
+    def click(self, hole:Hole):
         self.FLAG = False
         Mogura.NUMS -= 1
         Mogura.KILLS += self.point
         self.cool_time()
-
+        
+        # 追記　クリックされた時にholeクラスのset関数を呼ぶ
+        # hole(Hole)クラスのset関数にモグラごとの得点Mogura.pointを引数で渡す
+        hole.set(self.point)          
 
 class Bird:
     """こうかとんによる妨害プログラム"""
@@ -187,12 +225,12 @@ def main():
             if not hole[1].COOL_TIME:
                 # set_data = [img_path, zoom, point] 
                 set_data = [["fig/mogura1.jpg", 0.13, 1], ["fig/mogura2.jpg", 0.13, 3], ["fig/mogura3.jpg", 0.11, 10], 
-                            ["fig/can.jpg", 0.25, -1], ["fig/chinsan.jpg", 0.035, randint(-1, 1)*5]]
+                            ["fig/can.jpg", 0.25, -1], ["fig/chinsan.jpg", 0.035, randint(-1, 1)*5]] #使う写真
                 idx = np.random.choice(len(set_data), p=[0.65, 0.1, 0.01, 0.18, 0.06])
                 hole[1].update(scr, hole[0], set_data[idx])
                 for event in events:
                     if (event.type == pg.MOUSEBUTTONDOWN) and hole[1].check(event.pos):
-                        hole[1].click()
+                        hole[1].click(hole[0])
             else:
                 hole[1].COOL_TIME -= 1
         # bird(heightは、穴やモグラのy軸方向の幅)
