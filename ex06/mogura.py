@@ -28,7 +28,7 @@ class Screen:
 
 class Hole:
     """穴を生成"""
-    R = 120
+    R = 120         # 楕円の大きさ参照元
     COUNT = 80      # 追記　スコア表示時間参照元
 
     def __init__(self, scr:Screen, xy):
@@ -41,31 +41,31 @@ class Hole:
 
         self.pos = 0                    # 追記 スコア表示位置
         self.count = 0                  # 追記 スコア表示時間
-        self.mogurapoint = 0 #クリックされた対象のスコア
+        self.mogurapoint = 0            # クリックされた対象のスコア
 
     def blit(self):
         self.scr.sfc.blit(self.sfc, self.rct)
 
         if self.count:                  # 追記 self.countが0出ない時(スコア表示時間が設定されている時)
-            self.count -= 1 # 表示時間を減らす
-            self.p1()  # スコアを表示する関数を呼び出す
+            self.count -= 1                 # 表示時間を減らす
+            self.p1()                       # スコアを表示する関数を呼び出す
 
     # Moguraクラスから呼び出される関数
     # 引数1score：モグラの得点
     def set(self, score):
         self.pos = pg.mouse.get_pos()   # 追記 holeクラスにクリックされた位置を渡す
         self.count = Hole.COUNT         # 追記 スコア表示時間を設定
-        self.mogurapoint = score # Holeクラスからpointを取得する
+        self.mogurapoint = score        # Holeクラスからpointを取得する
         
-    # ここから変更
-    # モグラの得点に応じて画面にスコアを表示する関数
+
+    # 追記 モグラの得点に応じて画面にスコアを表示する関数
     def p1(self):
-        # モグラの得点が0点以下の処理
+        # モグラの得点が負の処理
         if(self.mogurapoint < 0):
             font2 = pg.font.SysFont(None, 45)
             txt = font2.render("{}".format(self.mogurapoint), True, (0, 0, 0))
             self.scr.sfc.blit(txt, self.pos)
-        # モグラの得点が正の時の処理
+        # モグラの得点が正または0の処理
         else :
             font2 = pg.font.SysFont(None, 45)
             txt = font2.render("+{}".format(self.mogurapoint), True, (0, 0, 0))
@@ -143,7 +143,7 @@ class Bird:
         # img_path: "fig/6.png", zoom: 2.0, xy: (900, 400)
         # こうかとん生成
         self.scr = scr
-        self.vx = randint(2, 7)     # 加速度
+        self.vx = randint(2, 7)     # x方向加速度(2~7のランダム)
         sfc = pg.image.load(img_path)
         self.sfc = pg.transform.rotozoom(sfc, 0, zoom)
         self.rct = self.sfc.get_rect()
@@ -159,8 +159,8 @@ class Bird:
         self.rct.move_ip(self.vx, 0)
         # 端に衝突を検知したら, 1/2の確率で実行
         if x == -1 and randint(0, 1):
-            n = randint(0, yn-1)
-            self.rct.centery = basey + n*height - 10
+            n = randint(0, yn-1)                        # 上から何段目に移動するかランダムで決定
+            self.rct.centery = basey + n*height - 10    # y座標の設定
         self.blit()
 
     def check_bound(self, scr_rct):
@@ -178,17 +178,15 @@ def timeup(scr:Screen):
     """timeup処理をしています"""
     fonts = pg.font.Font(None, 100)
     txt = fonts.render(str("TIME UP!"), True, (255, 0, 0))
-    scr.sfc.blit(txt, (250, 350))
-    
+    scr.sfc.blit(txt, (250, 350)) 
     pg.display.update()
     while True:
+        # ×で終了
         for event in pg.event.get():
             if event.type == pg.QUIT: return 
  
 def timer(secs):
-    """
-    timer処理、スレッドで行っている。
-    """
+    """timer処理、スレッドで行っている。"""
     global TIME
     TIME += 1 # 同期ずれ修正
     for i in range(secs, -1, -1):
@@ -228,17 +226,17 @@ def main():
         # hole処理
         for hole in holes:
             hole[0].blit()
-            if not hole[1].COOL_TIME:
-                # set_data = [img_path, zoom, point] 
+            if not hole[1].COOL_TIME:                                                   # Moguraクラスの処理待機カウントが0なら
+                # モグラのデータ、set_data = [[img_path, zoom, point],] 
                 set_data = [["fig/mogura1.jpg", 0.13, 1], ["fig/mogura2.jpg", 0.13, 3], ["fig/mogura3.jpg", 0.11, 10], 
-                            ["fig/can.jpg", 0.25, -1], ["fig/chinsan.jpg", 0.035, randint(-1, 1)*5]] #使う写真
-                idx = np.random.choice(len(set_data), p=[0.65, 0.1, 0.01, 0.18, 0.06])
-                hole[1].update(hole[0], set_data[idx])
+                            ["fig/can.jpg", 0.25, -1], ["fig/chinsan.jpg", 0.035, randint(-1, 1)*5]]
+                idx = np.random.choice(len(set_data), p=[0.65, 0.1, 0.01, 0.18, 0.06])      # set_dataのインデックス設定(ランダム(確率))
+                hole[1].update(hole[0], set_data[idx])                                      # Moguraクラスのupdateメソッド呼び出し
                 for event in events:
-                    if (event.type == pg.MOUSEBUTTONDOWN) and hole[1].check(event.pos):
-                        hole[1].click()
-            else:
-                hole[1].COOL_TIME -= 1
+                    if (event.type == pg.MOUSEBUTTONDOWN) and hole[1].check(event.pos):     # ボタンが押され、かつモグラがクリックされた時
+                        hole[1].click()                                                         # Moguraクラスのclickメソッド呼び出し
+            else:                                                                       # Moguraクラスの処理待機カウントが0以外なら
+                hole[1].COOL_TIME -= 1                                                      # 処理待機カウント -1
         # bird(heightは、穴やモグラのy軸方向の幅)
         bird.update(basey, height, yn)
         # timeup処理
