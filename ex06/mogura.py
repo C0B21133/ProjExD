@@ -5,7 +5,7 @@ import numpy as np
 import time
 from threading import Thread
 
-# タイマー時間を設定
+# タイマー時間を設定git
 TIME = 60
 
 
@@ -174,6 +174,21 @@ class Bird:
         return x
 
 
+class Hammer:
+    def __init__(self, img, zoom, center):
+        sfc = pg.image.load(img)
+        self.sfc = pg.transform.scale(sfc, zoom)
+        self.rct = self.sfc.get_rect()
+        self.rct.center = center
+
+    def update(self, mouse_xy):
+        # 位置をマウスカーソルに合わせる
+        self.rct.center = mouse_xy 
+
+    def brit(self, scr:Screen):
+        scr.sfc.blit(self.sfc, self.rct)
+
+
 def timeup(scr:Screen):
     """timeup処理をしています"""
     fonts = pg.font.Font(None, 100)
@@ -196,6 +211,8 @@ def timer(secs):
 def main():
     # スクリーン
     scr = Screen("pygame", (800, 800), "fig/sougenn.jpg")
+    # マウスカーソルの非表示
+    pg.mouse.set_visible(False)
     # 穴、モグラ作成
     basex = 40; basey = 150     # x/yの起点
     width = 200; height = 130   # x/y軸方向の幅
@@ -204,7 +221,13 @@ def main():
                 for x in range(xn) 
                 for y in range(yn)]
     # こうかとん
+<<<<<<< HEAD
+    bird = Bird("fig/6.png", 1.8, (90, 140))
+    #ハンマー
+    hammer = Hammer("fig/piko.png", (100, 100), (400, 400))
+=======
     bird = Bird(scr, "fig/6.png", 1.8, (basex + 50, basey - 10))
+>>>>>>> b167bb81f93cb9d66490f21ecbb268a51e0506cc
     # クロック
     clock = pg.time.Clock()
     # タイマー
@@ -238,7 +261,18 @@ def main():
             else:                                                                       # Moguraクラスの処理待機カウントが0以外なら
                 hole[1].COOL_TIME -= 1                                                      # 処理待機カウント -1
         # bird(heightは、穴やモグラのy軸方向の幅)
+<<<<<<< HEAD
+        bird.update(scr, basey, height, yn)
+        # マウスカーソルによる更新処理
+        for event in events:
+            if event.type == pg.MOUSEMOTION:
+                hammer.update(pg.mouse.get_pos())
+
+        # ハンマーを描写
+        hammer.brit(scr)
+=======
         bird.update(basey, height, yn)
+>>>>>>> b167bb81f93cb9d66490f21ecbb268a51e0506cc
         # timeup処理
         if not TIME:
             timeup(scr)
