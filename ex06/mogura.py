@@ -132,6 +132,8 @@ class Mogura:
         Mogura.NUMS -= 1                # 表示中のモグラの数 -1 
         Mogura.KILLS += self.point      # スコアにself.point()を加算
         self.cool_time()                # cool_timeメソッド呼び出し(処理待機カウント設定)
+        hit_sound = pg.mixer.Sound("fig/hit.wav")
+        hit_sound.play(0)
         
         # 追記　クリックされた時にholeクラスのset関数を呼ぶ
         # hole(Hole)クラスのset関数にモグラごとの得点Mogura.pointを引数で渡す
@@ -207,6 +209,16 @@ def timer(secs):
     for i in range(secs, -1, -1):
         TIME -= 1
         time.sleep(1)
+
+def bgm(bgm_num): #C0B21049
+    if bgm_num == 0:
+        pg.mixer.music.load("fig/gaming.wav")
+        pg.mixer.music.play(-1)
+    if bgm_num == 1:
+        pg.mixer.music.stop()
+        sound = pg.mixer.Sound("fig/whistle.mp3")
+        sound.play(0)
+        sound.set_volume(100)
               
 def main():
     # スクリーン
@@ -229,6 +241,7 @@ def main():
     # タイマー
     t = Thread(target=timer,args=(TIME,), daemon=True) # daemon=True でメインとともに終了
     t.start()
+    bgm(0) #C0B21049
     while True:
         # 背景作成
         scr.blit()
@@ -262,9 +275,12 @@ def main():
         for event in events:
             if event.type == pg.MOUSEMOTION:
                 hammer.update(pg.mouse.get_pos())
+
+        # ハンマーを描写
         hammer.blit(scr)
         # timeup処理
         if not TIME:
+            bgm(1) #C0B21049
             timeup(scr)
             return
         # クロック 
