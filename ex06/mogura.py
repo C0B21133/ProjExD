@@ -63,12 +63,12 @@ class Hole:
         # モグラの得点が負の処理
         if(self.mogurapoint < 0):
             font2 = pg.font.SysFont(None, 45)
-            txt = font2.render("{}".format(self.mogurapoint), True, (0, 0, 0))
+            txt = font2.render("{}".format(self.mogurapoint), True, (200, 0, 0))
             self.scr.sfc.blit(txt, self.pos)
         # モグラの得点が正または0の処理
         else :
             font2 = pg.font.SysFont(None, 45)
-            txt = font2.render("+{}".format(self.mogurapoint), True, (0, 0, 0))
+            txt = font2.render("+{}".format(self.mogurapoint), True, (0, 0, 200))
             self.scr.sfc.blit(txt, self.pos)
             
 
@@ -218,7 +218,7 @@ def bgm(bgm_num): #C0B21049
         pg.mixer.music.stop()
         sound = pg.mixer.Sound("fig/whistle.mp3")
         sound.play(0)
-        sound.set_volume(100)
+        sound.set_volume(1)
               
 def main():
     # スクリーン
