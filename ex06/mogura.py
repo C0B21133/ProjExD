@@ -6,7 +6,7 @@ import time
 from threading import Thread
 
 # タイマー時間を設定git
-TIME = 60
+TIME = 10
 
 
 class Screen:
