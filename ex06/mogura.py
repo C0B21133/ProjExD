@@ -91,6 +91,8 @@ class Mogura:
         self.FLAG = False
         Mogura.NUMS -= 1
         Mogura.KILLS += self.point
+        hit_sound = pg.mixer.Sound("fig/hit.wav")
+        hit_sound.play(0)
         self.cool_time()
 
 
@@ -150,6 +152,16 @@ def timer(secs):
     for i in range(secs, -1, -1):
         TIME -= 1
         time.sleep(1)
+
+def bgm(bgm_num): #C0B21049
+    if bgm_num == 0:
+        pg.mixer.music.load("fig/gaming.wav")
+        pg.mixer.music.play(-1)
+    if bgm_num == 1:
+        pg.mixer.music.stop()
+        sound = pg.mixer.Sound("fig/whistle.mp3")
+        sound.play(0)
+        sound.set_volume(100)
               
 def main():
     # スクリーン
@@ -168,6 +180,7 @@ def main():
     # タイマー
     t = Thread(target=timer,args=(TIME,), daemon=True) # daemon=True でメインとともに終了
     t.start()
+    bgm(0) #C0B21049
     while True:
         # 背景作成
         scr.blit()
@@ -199,6 +212,7 @@ def main():
         bird.update(scr, basey, height, yn)
         # timeup処理
         if not TIME:
+            bgm(1) #C0B21049
             timeup(scr)
             return
         # クロック 
