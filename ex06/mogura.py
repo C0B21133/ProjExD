@@ -5,8 +5,8 @@ import numpy as np
 import time
 from threading import Thread
 
-# タイマー時間を設定git
-TIME = 10
+# タイマー時間を設定
+TIME = 60
 
 
 class Screen:
