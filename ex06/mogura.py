@@ -39,18 +39,18 @@ class Hole:
         self.rct = self.sfc.get_rect()
         self.rct.center = xy
 
-        self.pos = 0                    # 追記 スコア表示位置
+        self.pos = 0                    # 追記 スコア表示位置　C0B21103
         self.count = 0                  # 追記 スコア表示時間
         self.mogurapoint = 0            # クリックされた対象のスコア
 
     def blit(self):
         self.scr.sfc.blit(self.sfc, self.rct)
 
-        if self.count:                  # 追記 self.countが0出ない時(スコア表示時間が設定されている時)
+        if self.count:                  # 追記 self.countが0出ない時(スコア表示時間が設定されている時)　C0B21103
             self.count -= 1                 # 表示時間を減らす
             self.p1()                       # スコアを表示する関数を呼び出す
 
-    # Moguraクラスから呼び出される関数
+    # Moguraクラスから呼び出される関数　C0B21103
     # 引数1score：モグラの得点
     def set(self, score):
         self.pos = pg.mouse.get_pos()   # 追記 holeクラスにクリックされた位置を渡す
@@ -58,7 +58,7 @@ class Hole:
         self.mogurapoint = score        # Holeクラスからpointを取得する
         
 
-    # 追記 モグラの得点に応じて画面にスコアを表示する関数
+    # 追記 モグラの得点に応じて画面にスコアを表示する関数　C0B21103
     def p1(self):
         # モグラの得点が負の処理
         if(self.mogurapoint < 0):
@@ -87,7 +87,7 @@ class Mogura:
         self.scr = scr                          # スクリーンインスタンスを保持
         self.hole = None                        # Holeインスタンスの保持先(初期化)
         
-    def set(self, setdata):    
+    def set(self, setdata):                     # C0B21133
         """pictureを設定、setdata = [[img_path, zoom, point],]"""
         sfc = pg.image.load(setdata[0])
         self.sfc = pg.transform.rotozoom(sfc, 0, setdata[1])
@@ -106,7 +106,7 @@ class Mogura:
         self.hole = hole                            # Holeインタンスを保持
         if Mogura.NUMS < Mogura.LIMIT or self.FLAG: # 出現上限以下 又は 表示中の時
             if not self.FLAG:                           # 新規表示なら
-                self.set(setdata)                           # set呼び出し (画像、ポイントの設定)
+                self.set(setdata)                           # set呼び出し (画像、ポイントの設定) C0B21133
                 self.FLAG = True                            # 表示状態にする
                 self.WAIT_TIME = randint(150, 500)          # モグラを表示するカウント設定(updateメソッドが150~500回呼び出されるまで表示)
                 Mogura.NUMS += 1                            # 表示中のモグラの数 +1 
@@ -135,7 +135,7 @@ class Mogura:
         hit_sound = pg.mixer.Sound("fig/hit.wav")
         hit_sound.play(0)
         
-        # 追記　クリックされた時にholeクラスのset関数を呼ぶ
+        # 追記　クリックされた時にholeクラスのset関数を呼ぶ　C0B21103
         # hole(Hole)クラスのset関数にモグラごとの得点Mogura.pointを引数で渡す
         self.hole.set(self.point)          
 
@@ -176,7 +176,7 @@ class Bird:
         return x
 
 
-class Hammer:
+class Hammer: # C0B21061
     def __init__(self, img, zoom, center):
         sfc = pg.image.load(img)
         self.sfc = pg.transform.scale(sfc, zoom)
@@ -234,7 +234,7 @@ def main():
                 for y in range(yn)]
     # こうかとん
     bird = Bird(scr, "fig/6.png", 1.8, (basex + 50, basey - 10))
-    #ハンマー
+    #ハンマー C0B21061
     hammer = Hammer("fig/piko.png", (100, 100), (400, 400))
     # クロック
     clock = pg.time.Clock()
@@ -258,6 +258,7 @@ def main():
         # hole処理
         for hole in holes:
             hole[0].blit()
+            # C0B21133 ここから
             if not hole[1].COOL_TIME:                                                   # Moguraクラスの処理待機カウントが0なら
                 # モグラのデータ、set_data = [[img_path, zoom, point],] 
                 set_data = [["fig/mogura1.jpg", 0.13, 1], ["fig/mogura2.jpg", 0.13, 3], ["fig/mogura3.jpg", 0.11, 10], 
@@ -271,13 +272,14 @@ def main():
                 hole[1].COOL_TIME -= 1                                                      # 処理待機カウント -1
         # bird(heightは、穴やモグラのy軸方向の幅)
         bird.update(basey, height, yn)
-        # マウスカーソルによる更新処理
+
+        # マウスカーソルによる更新処理 C0B21061
         for event in events:
             if event.type == pg.MOUSEMOTION:
                 hammer.update(pg.mouse.get_pos())
-
-        # ハンマーを描写
+        # ハンマーを描写 
         hammer.blit(scr)
+
         # timeup処理
         if not TIME:
             bgm(1) #C0B21049
