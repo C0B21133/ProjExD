@@ -187,7 +187,7 @@ class Hammer:
         # 位置をマウスカーソルに合わせる
         self.rct.center = mouse_xy 
 
-    def brit(self, scr:Screen):
+    def blit(self, scr:Screen):
         scr.sfc.blit(self.sfc, self.rct)
 
 
@@ -233,7 +233,7 @@ def main():
                 for x in range(xn) 
                 for y in range(yn)]
     # こうかとん
-    bird = Bird(scr, "fig/6.png", 1.8, (90, 140))
+    bird = Bird(scr, "fig/6.png", 1.8, (basex + 50, basey - 10))
     #ハンマー
     hammer = Hammer("fig/piko.png", (100, 100), (400, 400))
     # クロック
@@ -277,7 +277,7 @@ def main():
                 hammer.update(pg.mouse.get_pos())
 
         # ハンマーを描写
-        hammer.brit(scr)
+        hammer.blit(scr)
         # timeup処理
         if not TIME:
             bgm(1) #C0B21049
