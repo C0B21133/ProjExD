@@ -185,7 +185,7 @@ class Hammer:
         # 位置をマウスカーソルに合わせる
         self.rct.center = mouse_xy 
 
-    def brit(self, scr:Screen):
+    def blit(self, scr:Screen):
         scr.sfc.blit(self.sfc, self.rct)
 
 
@@ -221,13 +221,9 @@ def main():
                 for x in range(xn) 
                 for y in range(yn)]
     # こうかとん
-<<<<<<< HEAD
-    bird = Bird("fig/6.png", 1.8, (90, 140))
+    bird = Bird(scr, "fig/6.png", 1.8, (basex + 50, basey - 10))
     #ハンマー
     hammer = Hammer("fig/piko.png", (100, 100), (400, 400))
-=======
-    bird = Bird(scr, "fig/6.png", 1.8, (basex + 50, basey - 10))
->>>>>>> b167bb81f93cb9d66490f21ecbb268a51e0506cc
     # クロック
     clock = pg.time.Clock()
     # タイマー
@@ -261,18 +257,12 @@ def main():
             else:                                                                       # Moguraクラスの処理待機カウントが0以外なら
                 hole[1].COOL_TIME -= 1                                                      # 処理待機カウント -1
         # bird(heightは、穴やモグラのy軸方向の幅)
-<<<<<<< HEAD
-        bird.update(scr, basey, height, yn)
+        bird.update(basey, height, yn)
         # マウスカーソルによる更新処理
         for event in events:
             if event.type == pg.MOUSEMOTION:
                 hammer.update(pg.mouse.get_pos())
-
-        # ハンマーを描写
-        hammer.brit(scr)
-=======
-        bird.update(basey, height, yn)
->>>>>>> b167bb81f93cb9d66490f21ecbb268a51e0506cc
+        hammer.blit(scr)
         # timeup処理
         if not TIME:
             timeup(scr)
